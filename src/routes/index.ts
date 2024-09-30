@@ -3,6 +3,10 @@ import type { FastifyPluginCallback, RouteShorthandOptions } from 'fastify';
 const routes: FastifyPluginCallback = async function (fastify) {
 	const opts: RouteShorthandOptions = {
 		schema: {
+			description:
+				'Returns a mocked response based on authenticated user. The `nonce` field is defined to differentiate individual requests that will reach the backend. For cached responses the `nonce` will not change.',
+			tags: ['user'],
+			security: [{ Authorization: [] }],
 			response: {
 				200: {
 					type: 'object',
@@ -11,6 +15,23 @@ const routes: FastifyPluginCallback = async function (fastify) {
 						nonce: { type: 'string' },
 					},
 					required: ['id', 'nonce'],
+				},
+				401: {
+					type: 'object',
+					properties: {
+						message: { type: 'string', example: 'Unauthorized access.' },
+					},
+					required: ['message'],
+				},
+				429: {
+					type: 'object',
+					properties: {
+						message: {
+							type: 'string',
+							example: 'Too many requests, please try again later.',
+						},
+					},
+					required: ['message'],
 				},
 			},
 		},
